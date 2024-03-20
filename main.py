@@ -1,7 +1,7 @@
 import random, time
 import tabulate
 
-def ssort(L):
+def selection_sort(L):
     ### selection sort
     if (len(L) == 1):
         return(L)
@@ -13,9 +13,29 @@ def ssort(L):
         return [L[0]] + selection_sort(L[1:])
         
 def qsort(a, pivot_fn):
-    ## TO DO
+    ### Fixed Pivot implementation
+    #p = a[0]
+
+    ### Random Pivot implementation
+    #p = random.choice(a)
+
+    # Base case 0 or 1??
+    if len(a) <= 1:
+        return a
+    else:
+        p = pivot_fn(a)  # integer element
+        l = list(filter(lambda x: x < p, a))  # unsorted left list
+        m = list(filter(lambda x: x == p, a))  # pivot list
+        r = list(filter(lambda x: x > p, a))  # unsorted right list
+        return qsort(l, pivot_fn) + m + qsort(r, pivot_fn)
     pass
-    
+def first_pivot(a):  # added these two functions
+    return a[0]
+
+
+def random_pivot(a):  
+    return random.choice(a)
+
 def time_search(sort_fn, mylist):
     """
     Return the number of milliseconds to run this
@@ -39,7 +59,7 @@ def time_search(sort_fn, mylist):
     return (time.time() - start) * 1000
     ###
 
-def compare_sort(sizes=[100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]):
+def compare_sort(sizes=[100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000],shuffle=0):
     """
     Compare the running time of different sorting algorithms.
 
@@ -50,15 +70,17 @@ def compare_sort(sizes=[100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 10
       for each method to run on each value of n
     """
     ### TODO - sorting algorithms for comparison
-    qsort_fixed_pivot = # 
-    qsort_random_pivot = #
-    tim_sort = #
+    qsort_fixed_pivot = lambda a: qsort(a, first_pivot)  
+    qsort_random_pivot = lambda a: qsort(a, random_pivot)  
+    tim_sort = lambda a: sorted(a)
     result = []
     for size in sizes:
         # create list in ascending order
         mylist = list(range(size))
         # shuffles list if needed
         #random.shuffle(mylist)
+        if shuffle == 1:
+          random.shuffle(mylist)
         result.append([
             len(mylist),
             time_search(qsort_fixed_pivot, mylist),
@@ -75,7 +97,12 @@ def print_results(results):
                             tablefmt="github"))
 
 def test_print():
-    print_results(compare_sort())
+  print("Comparing on sorted lists:\n")
+  print_results(compare_sort(shuffle=0))
+  print("\n\n")
+  print("Comparing on shuffled lists:\n")
+  print_results(compare_sort(shuffle=1))
+  print_results(compare_sort())
 
-random.seed()
+#random.seed()
 test_print()
